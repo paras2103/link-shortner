@@ -1,17 +1,18 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo
+  postgres:
+    image: postgres
     restart: unless-stopped
-    container_name: mongodb
+    container_name: postgres-db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo
-      - MONGO_INITDB_ROOT_PASSWORD=Abcd_1234
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: url_shortener
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - ./db_mongo_new:/data/db
+      - ./docker/db_postgres:/var/lib/postgresql/data
 
   app:
     build: .
@@ -20,7 +21,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_DB_URI=mongodb://mongo:Abcd_1234@mongodb:27017/url_shortner?authSource=admin
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/url_shortener
       - PRODUCTION_URL=http://localhost:8000/
     depends_on:
-      - mongo
+      - postgres
+    entrypoint: ["sh", "./waitForDb.sh"]

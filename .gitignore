@@ -1,5 +1,5 @@
 /node_modules
-
 /db_mongo_new
-
+/db_postgres
+/docker
 .env
